@@ -132,3 +132,4 @@ dmypy.json
 
 *.json
 *.html
+asheville/nc shapefiles/*
