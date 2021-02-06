@@ -49,7 +49,7 @@ combined as (
 	select
 	*
 	from l
-	inner join properties p on l.properties_address = p.properties_location and left(p.properties_zip_code::varchar,5) = left(l.properties_zip::varchar,5)
+	inner join p on l.properties_address = p.properties_location and left(p.properties_zip_code::varchar,5) = left(l.properties_zip::varchar,5)
 
 )
 
@@ -59,7 +59,7 @@ combined as (
 select
 properties_address,
 properties_market_value,
-properties_zip,
+properties_zip as zip_code,
 properties_opa_account_num,
 properties_opa_owner,
 properties_licensenum as properties_rental_license_number,
@@ -88,7 +88,6 @@ properties_taxable_building as taxable_building,
 properties_taxable_land as taxable_land,
 properties_total_area as total_area,
 properties_total_livable_area as total_livable_area,
-properties_zip_code as zip_code,
 properties_zoning as zoning
 from combined
 where left(properties_zip,5) in ('19134', '19144', '19139', '19131', '19154', '19120', '19124', '19141', '19143', '19104')
