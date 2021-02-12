@@ -98,8 +98,20 @@ as (
   )
 );
 
--- 39.9567, -75.23375 - centered at locust and s. 56th
+-- 39.9567, -75.23375 - centered at locust and s. 56ths
 select
 *
 from west_philly_targets
 where hav_dist(latitude,longitude, 39.9567,-75.23375) <= 1600
+
+;
+
+select
+*
+from (
+	select
+	*,
+	hav_dist(latitude,longitude, 39.9567,-75.23375) as distance_from_center
+	from west_philly_clusters_20210211
+)
+order by distance_from_center	
