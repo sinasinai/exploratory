@@ -98,6 +98,7 @@ as (
   )
 );
 
+-- 39.9567, -75.23375 - centered at locust and s. 56th
 select
 *
 from west_philly_targets
