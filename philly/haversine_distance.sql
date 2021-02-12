@@ -2,7 +2,7 @@
 -- returns distance in meters between a pair of lat/lon points
 -- parameters are lat1, lon1, lat2, lon2
 -- distance is in meters, based on Earth's radius as 6,373,000 meters.
- CREATE OR REPLACE FUNCTION f_great_circle_distance (Float, Float, Float, Float)
+ CREATE OR REPLACE FUNCTION hav_dist (Float, Float, Float, Float)
    RETURNS FLOAT
  IMMUTABLE
  AS $$
