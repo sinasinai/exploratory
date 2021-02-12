@@ -97,3 +97,8 @@ as (
   	from smaller_units
   )
 );
+
+select
+*
+from west_philly_targets
+where hav_dist(latitude,longitude, 39.9567,-75.23375) <= 1600
