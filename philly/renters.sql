@@ -210,3 +210,40 @@ select
         property_longitude
     from
         renters
+;
+
+select
+*,
+sum(percent_of_units) over (order by units desc rows unbounded preceding) as cumulative_percent,
+row_number() over (partition by true) as number
+from (
+	select
+	*,
+	units::float/sum(units) over (partition by true) as percent_of_units
+	from (
+		select
+		upper(
+			case
+				when
+				(
+					properties_mailing_street ilike '%po box%'
+					or
+					properties_mailing_street like 'STE %'
+					or
+					properties_mailing_street like 'SUITE %'
+					or
+					len(properties_mailing_street) < 8
+				)
+				then coalesce(properties_business_mailing_address,properties_mailing_street)
+				else properties_mailing_street
+			end
+		) as landlord_address,
+		count(*) as units
+		from renters
+		group by 1
+		order by 2 desc
+	)
+	where landlord_address is not null
+	order by units desc
+
+)
