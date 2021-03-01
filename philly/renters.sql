@@ -238,8 +238,10 @@ from (
 				else properties_mailing_street
 			end
 		) as landlord_address,
-		count(*) as units
+		sum(properties_numberofunits) as units
 		from renters
+		where properties_licensestatus = 'Active'
+		or (properties_licensestatus != 'Active' and (properties_mostrecentissuedate::timestamp >= properties_sale_date::timestamp or properties_sale_date is null))
 		group by 1
 		order by 2 desc
 	)
