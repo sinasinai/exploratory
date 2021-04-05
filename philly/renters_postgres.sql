@@ -18,6 +18,7 @@ as (
 					*
 					from licenses
 					where properties_licensetype = 'Rental'
+					and properties_licensestatus != 'Closed'
 				) a
 			) b
 			where rk = 1
@@ -72,6 +73,7 @@ as (
 		,l.properties_legalentitytype
 		,l.properties_business_name
 		,l.properties_business_mailing_address
+		,l.properties_business_mailing_address_cleaned
 		,l.latitude as license_latitude
 		,l.longitude as license_longitude
 		,p.properties_assessment_date
@@ -103,7 +105,9 @@ as (
 		,p.properties_interior_condition
 		,p.properties_location
 		,p.properties_mailing_address_1
+		,p.properties_mailing_address_1_cleaned
 		,p.properties_mailing_address_2
+		,p.properties_mailing_address_2_cleaned
 		,p.properties_mailing_care_of
 		,p.properties_mailing_city_state
 		,p.properties_mailing_street
@@ -176,11 +180,11 @@ select
         properties_legalname,
         properties_legalentitytype,
         properties_business_name,
-        properties_business_mailing_address,
+        properties_business_mailing_address_cleaned,
         properties_building_code_description,
         properties_category_code_description,
-        properties_mailing_address_1,
-        properties_mailing_address_2,
+        properties_mailing_address_1_cleaned,
+        properties_mailing_address_2_cleaned,
         properties_mailing_city_state,
         properties_mailing_street,
         properties_mailing_zip,
@@ -211,41 +215,3 @@ select
     from
         renters
 ;
-
-select
-*,
-sum(percent_of_units) over (order by units desc rows unbounded preceding) as cumulative_percent,
-row_number() over (partition by true) as number
-from (
-	select
-	*,
-	units::float/sum(units) over (partition by true) as percent_of_units
-	from (
-		select
-		upper(
-			case
-				when
-				(
-					properties_mailing_street ilike '%po box%'
-					or
-					properties_mailing_street like 'STE %'
-					or
-					properties_mailing_street like 'SUITE %'
-					or
-					len(properties_mailing_street) < 8
-				)
-				then coalesce(properties_business_mailing_address,properties_mailing_street)
-				else properties_mailing_street
-			end
-		) as landlord_address,
-		sum(properties_numberofunits) as units
-		from renters
-		where properties_licensestatus = 'Active'
-		or (properties_licensestatus != 'Active' and (properties_mostrecentissuedate::timestamp >= properties_sale_date::timestamp or properties_sale_date is null))
-		group by 1
-		order by 2 desc
-	) a
-	where landlord_address is not null
-	order by units desc
-
-)
